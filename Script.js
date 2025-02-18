@@ -28,4 +28,28 @@ const employees = [
   { Matricula: "N5923221", Nome: "KELLY PINHEIRO LIRA", Setor: "Residencial", ETIT: "-", Assertividade: "-", DPA: "94,55%" }
 ];
 
+function consultar() {
+    const matriculaInput = document.getElementById("matricula").value.trim().toUpperCase();
+    const resultadoDiv = document.getElementById("resultado");
+
+    if (!matriculaInput) {
+        resultadoDiv.innerHTML = "<p style='color: red;'>Por favor, digite uma matrícula.</p>";
+        return;
+    }
+
+    const empregado = employees.find(emp => emp.Matricula === matriculaInput);
+
+    if (empregado) {
+        resultadoDiv.innerHTML = `
+            <p><strong>Nome:</strong> ${empregado.Nome}</p>
+            <p><strong>Setor:</strong> ${empregado.Setor}</p>
+            <p><strong>ETIT:</strong> ${empregado.ETIT || "Não informado"}</p>
+            <p><strong>Assertividade:</strong> ${empregado.Assertividade || "Não informado"}</p>
+            <p><strong>DPA:</strong> ${empregado.DPA || "Não informado"}</p>
+        `;
+    } else {
+        resultadoDiv.innerHTML = "<p style='color: red;'>Matrícula não encontrada.</p>";
+    }
+}
+
 console.log("Lista de Funcionários:", employees);
