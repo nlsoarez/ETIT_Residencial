@@ -3,14 +3,18 @@ body {
     background-color: #f4f4f4;
     margin: 0;
     padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
 .container {
-    max-width: 600px;
-    margin: auto;
+    width: 100%;
+    max-width: 400px;
     background: white;
     padding: 20px;
-    border-radius: 5px;
+    border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
@@ -22,21 +26,23 @@ body {
 }
 
 h1 {
-    text-align: center;
+    font-size: 22px;
+    margin-bottom: 15px;
 }
 
 input {
-    width: 100%;
+    width: calc(100% - 20px);
     padding: 10px;
     margin: 10px 0;
     border: 1px solid #ccc;
     border-radius: 5px;
+    font-size: 16px;
 }
 
 button {
     width: 100%;
     padding: 10px;
-    background-color: #E60000;
+    background-color: #dc0000;
     color: white;
     border: none;
     border-radius: 5px;
@@ -46,7 +52,7 @@ button {
 }
 
 button:hover {
-    background-color: #B20000;
+    background-color: #a00000;
 }
 
 .resultado {
@@ -54,4 +60,6 @@ button:hover {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    font-size: 14px;
+    text-align: left;
 }
