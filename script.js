@@ -48,6 +48,10 @@ function formatarValor(valor, setor, tipo) {
         `<span style="color: red; font-weight: bold;">${valor}</span>`;
 }
 
+function considerarDentroMeta(valor) {
+    return valor === "-" || valor === "Não informado" ? true : parseFloat(valor.replace("%", "")) >= 0;
+}
+
 function consultar() {
     const matriculaInput = document.getElementById("matricula").value.trim().toUpperCase();
     const resultadoDiv = document.getElementById("resultado");
@@ -60,17 +64,9 @@ function consultar() {
     const empregado = employees.find(emp => emp.Matricula === matriculaInput);
 
     if (empregado) {
-        const etitValor = parseFloat(empregado.ETIT.replace("%", "")) || 0;
-        const assertividadeValor = parseFloat(empregado.Assertividade.replace("%", "")) || 0;
-        const dpaValor = parseFloat(empregado.DPA.replace("%", "")) || 0;
-
-        const etitMeta = definirMeta(empregado.Setor, "ETIT");
-        const assertividadeMeta = definirMeta(empregado.Setor, "Assertividade");
-        const dpaMeta = definirMeta(empregado.Setor, "DPA");
-
-        const etitOk = etitValor >= etitMeta;
-        const assertividadeOk = assertividadeValor >= assertividadeMeta;
-        const dpaOk = dpaValor >= dpaMeta;
+        const etitOk = considerarDentroMeta(empregado.ETIT) || parseFloat(empregado.ETIT.replace("%", "")) >= definirMeta(empregado.Setor, "ETIT");
+        const assertividadeOk = considerarDentroMeta(empregado.Assertividade) || parseFloat(empregado.Assertividade.replace("%", "")) >= definirMeta(empregado.Setor, "Assertividade");
+        const dpaOk = considerarDentroMeta(empregado.DPA) || parseFloat(empregado.DPA.replace("%", "")) >= definirMeta(empregado.Setor, "DPA");
 
         const certificacaoMsg = etitOk && assertividadeOk && dpaOk ? 
             `<p style="color: green; font-weight: bold;">Você está certificando ✅</p>` : 
