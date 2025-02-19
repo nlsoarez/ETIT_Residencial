@@ -1,5 +1,5 @@
-const employees = [
-  { Matricula: "F204763", Nome: "RODRIGO REIS DUARTE", Setor: "Móvel", ETIT: "98%", Assertividade: "96%", DPA: "92,76%" },
+const employees = [ 
+    { Matricula: "F204763", Nome: "RODRIGO REIS DUARTE", Setor: "Móvel", ETIT: "98%", Assertividade: "96%", DPA: "92,76%" },
   { Matricula: "N6104793", Nome: "BRUNO MARIANO VILACA", Setor: "Móvel", ETIT: "82%", Assertividade: "98%", DPA: "84,61%" },
   { Matricula: "N6071740", Nome: "THIAGO BARBOZA DOS SANTOS", Setor: "Móvel", ETIT: "100%", Assertividade: "100%", DPA: "-" },
   { Matricula: "N6173067", Nome: "JULIANA RIBEIRO GALHÃO", Setor: "Móvel", ETIT: "93%", Assertividade: "98%", DPA: "84,20%" },
@@ -34,8 +34,8 @@ function formatarValor(valor, meta) {
     }
     const valorNumerico = parseFloat(valor.replace("%", ""));
     return valorNumerico >= meta ? 
-        `<span class="certificado">${valor}</span>` : 
-        `<span class="fora-da-meta">${valor}</span>`;
+        `<span style="color: green; font-weight: bold;">${valor}</span>` : 
+        `<span style="color: red; font-weight: bold;">${valor}</span>`;
 }
 
 function consultar() {
@@ -61,5 +61,3 @@ function consultar() {
         resultadoDiv.innerHTML = "<p style='color: red;'>Matrícula não encontrada.</p>";
     }
 }
-
-console.log("Lista de Funcionários:", employees);
