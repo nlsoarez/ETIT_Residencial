@@ -3,56 +3,39 @@ body {
     background-color: #f4f4f4;
     margin: 0;
     padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
 }
 
 .container {
-    width: 100%;
-    max-width: 400px;
+    max-width: 600px;
+    margin: auto;
     background: white;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-
-.logo {
-    width: 150px;
-    display: block;
-    margin: 0 auto 20px;
 }
 
 h1 {
-    font-size: 22px;
-    margin-bottom: 15px;
+    text-align: center;
 }
 
 input {
-    width: calc(100% - 20px);
+    width: 100%;
     padding: 10px;
     margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
 }
 
 button {
     width: 100%;
     padding: 10px;
-    background-color: #dc0000;
+    background-color: #28a745;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
 }
 
 button:hover {
-    background-color: #a00000;
+    background-color: #218838;
 }
 
 .resultado {
@@ -60,6 +43,36 @@ button:hover {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    font-size: 14px;
-    text-align: left;
+}
+
+.resultado p {
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 5px 0;
+}
+
+.resultado strong {
+    color: #333;
+}
+
+.certificado {
+    color: green;
+    font-weight: bold;
+}
+
+.fora-da-meta {
+    color: red;
+    font-weight: bold;
+}
+
+@media (max-width: 480px) {
+    .container {
+        width: 90%;
+        padding: 15px;
+    }
+
+    input, button {
+        font-size: 14px;
+        padding: 8px;
+    }
 }
