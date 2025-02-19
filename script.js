@@ -50,12 +50,25 @@ function consultar() {
     const empregado = employees.find(emp => emp.Matricula === matriculaInput);
 
     if (empregado) {
+        const etitValor = parseFloat(empregado.ETIT.replace("%", "")) || 0;
+        const assertividadeValor = parseFloat(empregado.Assertividade.replace("%", "")) || 0;
+        const dpaValor = parseFloat(empregado.DPA.replace("%", "")) || 0;
+
+        const etitOk = etitValor >= 85;
+        const assertividadeOk = assertividadeValor >= 98;
+        const dpaOk = dpaValor >= 90;
+
+        const certificacaoMsg = etitOk && assertividadeOk && dpaOk ? 
+            `<p style="color: green; font-weight: bold;">Você está certificando ✅</p>` : 
+            `<p style="color: red; font-weight: bold;">Você não está certificando ❌</p>`;
+
         resultadoDiv.innerHTML = `
             <p><strong>Nome:</strong> ${empregado.Nome}</p>
             <p><strong>Setor:</strong> ${empregado.Setor}</p>
             <p><strong>ETIT:</strong> ${formatarValor(empregado.ETIT, 85)}</p>
             <p><strong>Assertividade:</strong> ${formatarValor(empregado.Assertividade, 98)}</p>
             <p><strong>DPA:</strong> ${formatarValor(empregado.DPA, 90)}</p>
+            ${certificacaoMsg}
         `;
     } else {
         resultadoDiv.innerHTML = "<p style='color: red;'>Matrícula não encontrada.</p>";
