@@ -1,19 +1,17 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Cidades - Claro</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Consulta de Cidades</title>
 </head>
 <body>
-    <div class="container">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Logo_de_Claro.svg" alt="Logo Claro">
-        <h2>Consultar Cidades</h2>
-        <input type="text" id="cidade" placeholder="Digite a cidade">
-        <button onclick="consultarCidade()">Consultar</button>
-        <div class="resultado" id="resultado"></div>
-    </div>
+    <h2>Consulta de Informações da Cidade</h2>
+    <input type="text" id="cidadeInput" placeholder="Digite o nome da cidade">
+    <button id="buscarBtn">Consultar</button>
+    <div id="resultado"></div>
+
+    <!-- Carregar o JavaScript depois do HTML -->
     <script src="script.js"></script>
 </body>
 </html>
