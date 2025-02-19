@@ -1,3 +1,7 @@
+window.onload = function () {
+    document.getElementById("buscarBtn").addEventListener("click", buscarCidade);
+};
+
 const cidades = {
     "ITAJUBÁ": {
         "tecnologia": "GPON RESIDENCIAL REC RAL",
@@ -61,9 +65,14 @@ const cidades = {
     }
 };
 
-// Função para buscar cidade
 function buscarCidade() {
-    const input = document.getElementById("cidadeInput").value.toUpperCase().trim();
+    const inputField = document.getElementById("cidadeInput");
+    if (!inputField) {
+        console.error("Elemento cidadeInput não encontrado!");
+        return;
+    }
+
+    const input = inputField.value.trim().toUpperCase();
     const resultado = document.getElementById("resultado");
 
     if (cidades[input]) {
@@ -82,8 +91,3 @@ function buscarCidade() {
         resultado.innerHTML = "<p>Cidade não encontrada.</p>";
     }
 }
-
-// Aguarda o carregamento do DOM antes de adicionar o evento
-document.addEventListener("DOMContentLoaded", function() {
-    document.getElementById("buscarBtn").addEventListener("click", buscarCidade);
-});
