@@ -1,10 +1,44 @@
+const employees = [
+    { Matricula: "12345", Nome: "ROMULO BARBOSA NICOLAE", Setor: "Empresarial", ETIT: "53%", Assertividade: "-", DPA: "69.47%" },
+    { Matricula: "67890", Nome: "JOÃO SILVA", Setor: "Residencial", ETIT: "90%", Assertividade: "99%", DPA: "92%" },
+    { Matricula: "11223", Nome: "MARIA OLIVEIRA", Setor: "Móvel", ETIT: "85%", Assertividade: "86%", DPA: "91%" }
+];
+
+function definirMeta(setor, tipo) {
+    const metas = {
+        "ETIT Móvel": 80,
+        "ETIT Residencial e Empresarial": 85,
+        "Assertividade Móvel": 85,
+        "Assertividade Residencial": 98,
+        "DPA": 90
+    };
+
+    if (tipo === "ETIT") {
+        return setor === "Móvel" ? metas["ETIT Móvel"] : metas["ETIT Residencial e Empresarial"];
+    }
+    if (tipo === "Assertividade") {
+        return setor === "Móvel" ? metas["Assertividade Móvel"] : metas["Assertividade Residencial"];
+    }
+    return metas["DPA"];
+}
+
 function considerarDentroMeta(valor, setor, tipo) {
     if (valor === "-" || valor === "Não informado") {
-        return true; // Sem dados, considera dentro da meta
+        return true; 
     }
-    
+
     const valorNumerico = parseFloat(valor.replace("%", ""));
-    return valorNumerico >= definirMeta(setor, tipo); // Compara com a meta correta
+    return valorNumerico >= definirMeta(setor, tipo);
+}
+
+function formatarValor(valor, setor, tipo) {
+    if (valor === "-" || valor === "Não informado") {
+        return "-";
+    }
+
+    const valorNumerico = parseFloat(valor.replace("%", ""));
+    const dentroDaMeta = valorNumerico >= definirMeta(setor, tipo);
+    return dentroDaMeta ? `<span style="color: green;">${valor}</span>` : `<span style="color: red;">${valor}</span>`;
 }
 
 function consultar() {
