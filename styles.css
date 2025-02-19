@@ -1,4 +1,4 @@
-body {
+body { 
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
     margin: 0;
@@ -45,10 +45,34 @@ button:hover {
     border-radius: 5px;
 }
 
+.resultado p {
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 5px 0;
+}
+
+.resultado strong {
+    color: #333;
+}
+
 .certificado {
     color: green;
+    font-weight: bold;
 }
 
 .fora-da-meta {
     color: red;
+    font-weight: bold;
+}
+
+@media (max-width: 480px) {
+    .container {
+        width: 90%;
+        padding: 15px;
+    }
+
+    input, button {
+        font-size: 14px;
+        padding: 8px;
+    }
 }
