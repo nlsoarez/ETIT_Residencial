@@ -1,5 +1,5 @@
 const employees = [ 
-    { Matricula: "F204763", Nome: "RODRIGO REIS DUARTE", Setor: "Móvel", ETIT: "98%", Assertividade: "96%", DPA: "92,76%" },
+  { Matricula: "F204763", Nome: "RODRIGO REIS DUARTE", Setor: "Móvel", ETIT: "98%", Assertividade: "96%", DPA: "92,76%" },
   { Matricula: "N6104793", Nome: "BRUNO MARIANO VILACA", Setor: "Móvel", ETIT: "82%", Assertividade: "98%", DPA: "84,61%" },
   { Matricula: "N6071740", Nome: "THIAGO BARBOZA DOS SANTOS", Setor: "Móvel", ETIT: "100%", Assertividade: "100%", DPA: "-" },
   { Matricula: "N6173067", Nome: "JULIANA RIBEIRO GALHÃO", Setor: "Móvel", ETIT: "93%", Assertividade: "98%", DPA: "84,20%" },
@@ -28,11 +28,21 @@ const employees = [
   { Matricula: "N5923221", Nome: "KELLY PINHEIRO LIRA", Setor: "Residencial", ETIT: "-", Assertividade: "-", DPA: "94,55%" }
 ];
 
-function formatarValor(valor, meta) {
+function definirMeta(setor, tipo) {
+    const metas = {
+        "ETIT": { "Móvel": 80, "Residencial": 85, "Empresarial": 85 },
+        "Assertividade": { "Móvel": 85, "Residencial": 98 },
+        "DPA": 90
+    };
+    return metas[tipo][setor] || metas[tipo];
+}
+
+function formatarValor(valor, setor, tipo) {
     if (valor === "-" || valor === "Não informado") {
         return `<span style="color: gray;">${valor}</span>`;
     }
     const valorNumerico = parseFloat(valor.replace("%", ""));
+    const meta = definirMeta(setor, tipo);
     return valorNumerico >= meta ? 
         `<span style="color: green; font-weight: bold;">${valor}</span>` : 
         `<span style="color: red; font-weight: bold;">${valor}</span>`;
@@ -54,9 +64,13 @@ function consultar() {
         const assertividadeValor = parseFloat(empregado.Assertividade.replace("%", "")) || 0;
         const dpaValor = parseFloat(empregado.DPA.replace("%", "")) || 0;
 
-        const etitOk = etitValor >= 85;
-        const assertividadeOk = assertividadeValor >= 98;
-        const dpaOk = dpaValor >= 90;
+        const etitMeta = definirMeta(empregado.Setor, "ETIT");
+        const assertividadeMeta = definirMeta(empregado.Setor, "Assertividade");
+        const dpaMeta = definirMeta(empregado.Setor, "DPA");
+
+        const etitOk = etitValor >= etitMeta;
+        const assertividadeOk = assertividadeValor >= assertividadeMeta;
+        const dpaOk = dpaValor >= dpaMeta;
 
         const certificacaoMsg = etitOk && assertividadeOk && dpaOk ? 
             `<p style="color: green; font-weight: bold;">Você está certificando ✅</p>` : 
@@ -65,9 +79,9 @@ function consultar() {
         resultadoDiv.innerHTML = `
             <p><strong>Nome:</strong> ${empregado.Nome}</p>
             <p><strong>Setor:</strong> ${empregado.Setor}</p>
-            <p><strong>ETIT:</strong> ${formatarValor(empregado.ETIT, 85)}</p>
-            <p><strong>Assertividade:</strong> ${formatarValor(empregado.Assertividade, 98)}</p>
-            <p><strong>DPA:</strong> ${formatarValor(empregado.DPA, 90)}</p>
+            <p><strong>ETIT:</strong> ${formatarValor(empregado.ETIT, empregado.Setor, "ETIT")}</p>
+            <p><strong>Assertividade:</strong> ${formatarValor(empregado.Assertividade, empregado.Setor, "Assertividade")}</p>
+            <p><strong>DPA:</strong> ${formatarValor(empregado.DPA, empregado.Setor, "DPA")}</p>
             ${certificacaoMsg}
         `;
     } else {
