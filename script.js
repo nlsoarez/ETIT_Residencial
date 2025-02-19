@@ -63,7 +63,7 @@ const cidades = {
 
 // Função para buscar cidade
 function buscarCidade() {
-    const input = document.getElementById("cidadeInput").value.toUpperCase();
+    const input = document.getElementById("cidadeInput").value.toUpperCase().trim();
     const resultado = document.getElementById("resultado");
 
     if (cidades[input]) {
@@ -83,4 +83,7 @@ function buscarCidade() {
     }
 }
 
-document.getElementById("buscarBtn").addEventListener("click", buscarCidade);
+// Aguarda o carregamento do DOM antes de adicionar o evento
+document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("buscarBtn").addEventListener("click", buscarCidade);
+});
