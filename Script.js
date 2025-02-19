@@ -28,6 +28,16 @@ const employees = [
   { Matricula: "N5923221", Nome: "KELLY PINHEIRO LIRA", Setor: "Residencial", ETIT: "-", Assertividade: "-", DPA: "94,55%" }
 ];
 
+function formatarValor(valor, meta) {
+    if (valor === "-" || valor === "Não informado") {
+        return `<span style="color: gray;">${valor}</span>`;
+    }
+    const valorNumerico = parseFloat(valor.replace("%", ""));
+    return valorNumerico >= meta ? 
+        `<span class="certificado">${valor}</span>` : 
+        `<span class="fora-da-meta">${valor}</span>`;
+}
+
 function consultar() {
     const matriculaInput = document.getElementById("matricula").value.trim().toUpperCase();
     const resultadoDiv = document.getElementById("resultado");
@@ -43,9 +53,9 @@ function consultar() {
         resultadoDiv.innerHTML = `
             <p><strong>Nome:</strong> ${empregado.Nome}</p>
             <p><strong>Setor:</strong> ${empregado.Setor}</p>
-            <p><strong>ETIT:</strong> ${empregado.ETIT || "Não informado"}</p>
-            <p><strong>Assertividade:</strong> ${empregado.Assertividade || "Não informado"}</p>
-            <p><strong>DPA:</strong> ${empregado.DPA || "Não informado"}</p>
+            <p><strong>ETIT:</strong> ${formatarValor(empregado.ETIT, 85)}</p>
+            <p><strong>Assertividade:</strong> ${formatarValor(empregado.Assertividade, 98)}</p>
+            <p><strong>DPA:</strong> ${formatarValor(empregado.DPA, 90)}</p>
         `;
     } else {
         resultadoDiv.innerHTML = "<p style='color: red;'>Matrícula não encontrada.</p>";
