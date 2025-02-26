@@ -20,6 +20,10 @@
             max-width: 600px;
             margin: auto;
         }
+        .logo {
+            width: 150px;
+            margin-bottom: 15px;
+        }
         h2 {
             color: #333;
         }
@@ -53,17 +57,18 @@
             color: white;
         }
         .ganho {
-            background: #28a745;
-            color: white;
+            color: #007bff; /* Azul */
+            font-weight: bold;
         }
         .perda {
-            background: #dc3545;
-            color: white;
+            color: #dc3545; /* Vermelho */
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2e/Claro_logo.png" alt="Logo Claro" class="logo">
         <h2>Portal de Consulta de Outages</h2>
         <input type="file" id="upload" accept=".xlsx">
         <br>
@@ -129,15 +134,13 @@
             ganhos.forEach(id => {
                 let row = tabela.insertRow();
                 row.insertCell(0).innerText = id;
-                row.insertCell(1).innerText = "Ganho";
-                row.cells[1].classList.add("ganho");
+                row.insertCell(1).innerHTML = '<span class="ganho">Ganho</span>';
             });
 
             perdas.forEach(id => {
                 let row = tabela.insertRow();
                 row.insertCell(0).innerText = id;
-                row.insertCell(1).innerText = "Perda";
-                row.cells[1].classList.add("perda");
+                row.insertCell(1).innerHTML = '<span class="perda">Perda</span>';
             });
         }
 
