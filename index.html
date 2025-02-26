@@ -25,7 +25,7 @@
             margin-bottom: 15px;
         }
         h2 {
-            color: #333;
+            color: #dc3545; /* Vermelho Claro */
         }
         input, button {
             padding: 10px;
@@ -34,13 +34,13 @@
             border-radius: 5px;
         }
         button {
-            background: #007bff;
+            background: #dc3545; /* Vermelho */
             color: white;
             border: none;
             cursor: pointer;
         }
         button:hover {
-            background: #0056b3;
+            background: #b02a37;
         }
         table {
             width: 100%;
@@ -53,22 +53,22 @@
             text-align: center;
         }
         th {
-            background: #007bff;
+            background: #dc3545; /* Vermelho */
             color: white;
         }
         .ganho {
-            color: #007bff; /* Azul */
+            color: #28a745; /* Verde */
             font-weight: bold;
         }
         .perda {
-            color: #dc3545; /* Vermelho */
+            color: #dc3545; /* Vermelho Vivo */
             font-weight: bold;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2e/Claro_logo.png" alt="Logo Claro" class="logo">
+        <img src="https://imagensempng.com.br/wp-content/uploads/2020/12/logo-claro-png_optimized.png" alt="Logo Claro" class="logo">
         <h2>Portal de Consulta de Outages</h2>
         <input type="file" id="upload" accept=".xlsx">
         <br>
@@ -76,8 +76,8 @@
         <button onclick="consultarOutages()">Consultar</button>
         <button onclick="limparConsulta()">Limpar</button>
         <br>
-        <h3>Resultados:</h3>
-        <p id="resumo"></p>
+        <h3 style="color: #dc3545;">Resultados:</h3>
+        <p id="resumo" style="color: #dc3545;"></p>
         <table id="tabelaResultados">
             <thead>
                 <tr>
