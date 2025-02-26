@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Outages</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        input, button { padding: 10px; margin: 10px; }
+        table { width: 80%; margin: auto; border-collapse: collapse; }
+        th, td { border: 1px solid black; padding: 8px; }
+    </style>
+</head>
+<body>
+    <h2>Portal de Consulta de Outages</h2>
+    <input type="file" id="upload" accept=".xlsx">
+    <br>
+    <input type="text" id="matricula" placeholder="Digite a matrícula">
+    <button onclick="consultarOutages()">Consultar</button>
+    <br>
+    <h3>Resultados:</h3>
+    <p id="resumo"></p>
+    <table id="tabelaResultados">
+        <thead>
+            <tr>
+                <th>ID Outage</th>
+                <th>HFC - Resultado</th>
+                <th>GPON - Resultado</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    
+    <script>
+        let dadosPlanilha = [];
+        document.getElementById('upload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheetName = workbook.SheetNames[0];
+                const sheet = workbook.Sheets[sheetName];
+                dadosPlanilha = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                alert("Planilha carregada com sucesso!");
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        function consultarOutages() {
+            const matricula = document.getElementById('matricula').value.trim();
+            if (!matricula) {
+                alert("Digite uma matrícula!");
+                return;
+            }
+
+            let ganhosHFC = 0, perdasHFC = 0;
+            let ganhosGPON = 0, perdasGPON = 0;
+            let resultados = [];
+
+            dadosPlanilha.forEach(row => {
+                if (row[1] === matricula) {
+                    let resultadoHFC = (row[2] === 1 && row[3] === 1) ? "Ganho" : (row[2] === 1 && row[3] === 0) ? "Perda" : "-";
+                    let resultadoGPON = (row[4] === 1 && row[5] === 1) ? "Ganho" : (row[4] === 1 && row[5] === 0) ? "Perda" : "-";
+                    
+                    if (resultadoHFC === "Ganho") ganhosHFC++;
+                    if (resultadoHFC === "Perda") perdasHFC++;
+                    if (resultadoGPON === "Ganho") ganhosGPON++;
+                    if (resultadoGPON === "Perda") perdasGPON++;
+
+                    resultados.push({ id: row[0], hfc: resultadoHFC, gpon: resultadoGPON });
+                }
+            });
+
+            document.getElementById('resumo').innerText = `HFC - Ganhos: ${ganhosHFC}, Perdas: ${perdasHFC} | GPON - Ganhos: ${ganhosGPON}, Perdas: ${perdasGPON}`;
+            const tabela = document.getElementById('tabelaResultados').getElementsByTagName('tbody')[0];
+            tabela.innerHTML = "";
+            resultados.forEach(res => {
+                let row = tabela.insertRow();
+                row.insertCell(0).innerText = res.id;
+                row.insertCell(1).innerText = res.hfc;
+                row.insertCell(2).innerText = res.gpon;
+            });
+        }
+    </script>
+</body>
+</html>
