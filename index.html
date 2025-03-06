@@ -113,7 +113,7 @@
         });
 
         function consultarOutages() {
-            const matricula = document.getElementById('matricula').value.trim();
+            const matricula = document.getElementById('matricula').value.trim().toLowerCase(); // Normaliza para minúsculo
             if (!matricula) {
                 alert("Digite uma matrícula!");
                 return;
@@ -121,20 +121,57 @@
 
             let ganhos = [];
             let perdas = [];
+            let tempos = {}; // Para calcular tempo médio por login
+            let perdasPorHora = {}; // Para contar perdas por hora
 
             dadosPlanilha.forEach(row => {
-                if (row[1] === matricula) {
-                    let ganhoHFC = (row[2] === 1 && row[3] === 1);
-                    let perdaHFC = (row[2] === 1 && row[3] === 0);
-                    let ganhoGPON = (row[4] === 1 && row[5] === 1);
-                    let perdaGPON = (row[4] === 1 && row[5] === 0);
+                const login = row[1].toString().toLowerCase(); // Normaliza para minúsculo
+                if (login === matricula) {
+                    // Converte as datas e calcula o tempo entre Início e Fim
+                    const inicio = new Date(row[2]);
+                    const fim = new Date(row[3]);
+                    const tempo = (fim - inicio) / 60000; // Calcula em minutos
+
+                    // Armazena o tempo por login
+                    if (!tempos[login]) tempos[login] = [];
+                    tempos[login].push(tempo);
+
+                    // Verifica se há perda ou ganho em HFC e GPON
+                    let ganhoHFC = (row[4] === 1 && row[5] === 1);
+                    let perdaHFC = (row[4] === 1 && row[5] === 0);
+                    let ganhoGPON = (row[6] === 1 && row[7] === 1);
+                    let perdaGPON = (row[6] === 1 && row[7] === 0);
 
                     if (ganhoHFC || ganhoGPON) ganhos.push(row[0]);
-                    if (perdaHFC || perdaGPON) perdas.push(row[0]);
+                    if (perdaHFC || perdaGPON) {
+                        perdas.push(row[0]);
+
+                        // Conta as perdas por hora (considerando a hora do "Início")
+                        const horaInicio = inicio.getHours();
+                        if (!perdasPorHora[horaInicio]) perdasPorHora[horaInicio] = 0;
+                        perdasPorHora[horaInicio]++;
+                    }
                 }
             });
 
-            document.getElementById('resumo').innerText = `Ganhos: ${ganhos.length} | Perdas: ${perdas.length}`;
+            // Calcula o tempo médio por login
+            let tempoMedio = 0;
+            if (tempos[matricula] && tempos[matricula].length > 0) {
+                tempoMedio = tempos[matricula].reduce((sum, time) => sum + time, 0) / tempos[matricula].length;
+            }
+
+            // Encontra a hora com mais perdas
+            let horaMaxPerda = null;
+            let maxPerdas = 0;
+            for (let hora in perdasPorHora) {
+                if (perdasPorHora[hora] > maxPerdas) {
+                    maxPerdas = perdasPorHora[hora];
+                    horaMaxPerda = hora;
+                }
+            }
+
+            document.getElementById('resumo').innerText = `Ganhos: ${ganhos.length} | Perdas: ${perdas.length} | Tempo médio: ${tempoMedio.toFixed(2)} minutos | Hora com mais perdas: ${horaMaxPerda}:00 (Perdas: ${maxPerdas})`;
+
             const tabela = document.getElementById('tabelaResultados').getElementsByTagName('tbody')[0];
             tabela.innerHTML = "";
 
