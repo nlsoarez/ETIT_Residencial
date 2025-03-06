@@ -134,7 +134,8 @@
                 }
             });
 
-            document.getElementById('resumo').innerText = Ganhos: ${ganhos.length} | Perdas: ${perdas.length};
+            // Corrigido o erro aqui
+            document.getElementById('resumo').innerText = `Ganhos: ${ganhos.length} | Perdas: ${perdas.length}`;
             const tabela = document.getElementById('tabelaResultados').getElementsByTagName('tbody')[0];
             tabela.innerHTML = "";
 
