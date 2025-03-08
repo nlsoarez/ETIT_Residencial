@@ -3,104 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Outages</title>
+    <title>Consulta SLA</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
+        /* Estilo do corpo e fonte */
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f4f4f4;
-            padding: 20px;
+            font-family: 'Arial', sans-serif;
+            background-color: #f2f2f2;
+            color: #333;
+            margin: 0;
+            padding: 0;
         }
+
+        /* Container principal */
         .container {
-            background: #fff;
+            max-width: 800px;
+            margin: 50px auto;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            margin: auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
-        .logo {
-            width: 100px; /* Diminuiu o tamanho da logo */
+
+        /* Logo */
+        .logo img {
+            width: 150px;
+            margin-bottom: 20px;
+        }
+
+        /* Títulos e subtítulos */
+        h2 {
+            font-size: 24px;
+            color: #D52B1E;
             margin-bottom: 15px;
         }
-        h2 {
-            color: #333;
+
+        h3 {
+            font-size: 20px;
+            color: #444;
+            margin-top: 20px;
         }
+
+        /* Estilo de entrada e botão */
+        .input-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
         input, button {
-            padding: 10px;
-            margin: 10px 5px;
-            border: 1px solid #ccc;
+            padding: 12px;
+            font-size: 16px;
             border-radius: 5px;
+            border: 1px solid #ccc;
         }
-        button {
-            background: #dc3545; /* Vermelho Claro */
+
+        input {
+            width: 40%; /* Caixa do login um pouco menor */
+        }
+
+        .botao {
+            background-color: #D52B1E;
             color: white;
             border: none;
             cursor: pointer;
             font-weight: bold;
         }
-        button:hover {
-            background: #b02a37;
+
+        .botao:hover {
+            background-color: #B2221A;
         }
+
+        /* Estilo das tabelas */
         table {
             width: 100%;
-            margin-top: 15px;
             border-collapse: collapse;
+            margin-top: 15px;
         }
+
         th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
+            padding: 8px;
             text-align: center;
+            border: 1px solid #ddd;
         }
+
         th {
-            background: #dc3545; /* Vermelho */
+            background-color: #D52B1E;
             color: white;
         }
+
+        /* Classes para diferenciação de ganhos e perdas */
         .ganho {
-            background-color: #28a745; /* Verde */
+            background-color: #4CAF50;
             color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-weight: bold;
         }
+
         .perda {
-            background-color: #dc3545; /* Vermelho Vivo */
+            background-color: #FF4D4D;
             color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
+        }
+
+        /* Contadores */
+        .contador {
             font-weight: bold;
+            margin-top: 20px;
+        }
+
+        /* Separando seções */
+        .resultados {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .section {
+            margin-top: 20px;
+        }
+
+        .nome {
+            font-size: 16px;
+            margin-top: 10px;
+            color: #444;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <img src="https://www.eventos.momentoeditorial.com.br/wp-content/uploads/2020/07/logo-Claro-800x600px.png" alt="Logo Claro" class="logo">
+        <div class="logo">
+            <img src="https://www.eventos.momentoeditorial.com.br/wp-content/uploads/2020/07/logo-Claro-800x600px.png" alt="Claro Brasil Logo">
+        </div>
         <h2>Painel ETIT Residencial</h2>
-        <input type="file" id="upload" accept=".xlsx">
-        <br>
-        <input type="text" id="matricula" placeholder="Digite o Login">
-        <button onclick="consultarOutages()">Consultar</button>
-        <button onclick="limparConsulta()">Limpar</button>
-        <br>
-        <h3>Resultados:</h3>
-        <p id="resumo"></p>
-        <table id="tabelaResultados">
-            <thead>
-                <tr>
-                    <th>ID Outage</th>
-                    <th>Tipo</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+        <div class="input-group">
+            <input type="file" id="upload" accept=".xlsx">
+        </div>
+        <div class="input-group">
+            <input type="text" id="login" placeholder="Digite o login">
+            <button class="botao" onclick="consultarSLA()">Consultar</button>
+        </div>
+
+        <div id="nomeUsuario" class="nome"></div>
+
+        <div class="resultados">
+            <div class="section" id="contadores">
+                <h3>Resultados:</h3>
+                <div id="resultadosMain"></div>
+            </div>
+
+            <div class="section" id="tabelaGanhos">
+                <h3>Dentro do SLA:</h3>
+                <table>
+                    <thead>
+                        <tr><th>Ticket</th><th>Tempo (minutos)</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div class="section" id="tabelaPerdas">
+                <h3>Fora do SLA:</h3>
+                <table>
+                    <thead>
+                        <tr><th>Ticket</th><th>Tempo (minutos)</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <script>
         let dadosPlanilha = [];
 
-        // Mapeamento dos logins para os nomes
-        const loginsParaNomes = {
+        const loginToName = {
             "N0238475": "MARLEY MARQUES RIBEIRO",
             "N5923221": "KELLY PINHEIRO LIRA",
             "F160641": "JENNIFER MARIA ANDRADE SANTOS",
@@ -125,61 +201,76 @@
                 const sheetName = workbook.SheetNames[0];
                 const sheet = workbook.Sheets[sheetName];
                 dadosPlanilha = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
                 alert("Planilha carregada com sucesso!");
             };
             reader.readAsArrayBuffer(file);
         });
 
-        function consultarOutages() {
-            const matricula = document.getElementById('matricula').value.trim();
-            if (!matricula) {
-                alert("Digite uma matrícula!");
-                return;
-            }
-
-            // Verifica se o login existe no mapeamento
-            const nome = loginsParaNomes[matricula];
-            if (!nome) {
-                alert("Login não encontrado!");
+        function consultarSLA() {
+            const login = document.getElementById('login').value.trim();
+            if (!login) {
+                alert("Digite um login!");
                 return;
             }
 
             let ganhos = [];
             let perdas = [];
+            let totalTempoGanhos = 0;
+            let totalTempoPerdas = 0;
 
             dadosPlanilha.forEach(row => {
-                if (row[1] === matricula) {
-                    let ganhoHFC = (row[2] === 1 && row[3] === 1);
-                    let perdaHFC = (row[2] === 1 && row[3] === 0);
-                    let ganhoGPON = (row[4] === 1 && row[5] === 1);
-                    let perdaGPON = (row[4] === 1 && row[5] === 0);
+                if (!row || row.length < 9) return;
 
-                    if (ganhoHFC || ganhoGPON) ganhos.push(row[0]);
-                    if (perdaHFC || perdaGPON) perdas.push(row[0]);
+                let ticket = row[0];
+                let usuarioLogin = row[1]?.toString().trim().toLowerCase();
+                let tempo = parseFloat(row[4]) * 1440;
+                let etitHFC1 = row[5];
+                let etitHFC2 = row[6];
+                let etitGPON1 = row[7];
+                let etitGPON2 = row[8];
+
+                if (usuarioLogin.includes(login.toLowerCase())) {
+                    let etitHFC = (etitHFC1 == 1 && etitHFC2 == 1) ? 'Ganhou' : (etitHFC1 == 1 && etitHFC2 == 0) ? 'Perdeu' : 'Ignorado';
+                    let etitGPON = (etitGPON1 == 1 && etitGPON2 == 1) ? 'Ganhou' : (etitGPON1 == 1 && etitGPON2 == 0) ? 'Perdeu' : 'Ignorado';
+
+                    if (etitHFC === 'Ganhou' || etitGPON === 'Ganhou') {
+                        ganhos.push([ticket, tempo.toFixed(2)]);
+                        totalTempoGanhos += tempo;
+                    } else if (etitHFC === 'Perdeu' || etitGPON === 'Perdeu') {
+                        perdas.push([ticket, tempo.toFixed(2)]);
+                        totalTempoPerdas += tempo;
+                    }
                 }
             });
 
-            document.getElementById('resumo').innerText = `${nome} - Ganhos: ${ganhos.length} | Perdas: ${perdas.length}`;
-            const tabela = document.getElementById('tabelaResultados').getElementsByTagName('tbody')[0];
-            tabela.innerHTML = "";
+            let mediaGanhos = ganhos.length > 0 ? (totalTempoGanhos / ganhos.length).toFixed(2) : "N/A";
+            let mediaPerdas = perdas.length > 0 ? (totalTempoPerdas / perdas.length).toFixed(2) : "N/A";
 
-            ganhos.forEach(id => {
-                let row = tabela.insertRow();
-                row.insertCell(0).innerText = id;
-                row.insertCell(1).innerHTML = '<span class="ganho">Ganho</span>';
-            });
+            const nomeUsuario = loginToName[login.toUpperCase()] || "Nome não encontrado";
 
-            perdas.forEach(id => {
-                let row = tabela.insertRow();
-                row.insertCell(0).innerText = id;
-                row.insertCell(1).innerHTML = '<span class="perda">Perda</span>';
-            });
+            document.getElementById("nomeUsuario").innerHTML = `Nome: ${nomeUsuario}`;
+            document.getElementById("contadores").innerHTML = 
+                `<div><strong>Total Dentro do SLA:</strong> ${ganhos.length}</div>
+                <div><strong>Total Fora do SLA:</strong> ${perdas.length}</div>
+                <div><strong>Tempo Médio Dentro do SLA:</strong> <b>${mediaGanhos}</b></div>
+                <div><strong>Tempo Médio Fora do SLA:</strong> <b>${mediaPerdas}</b></div>`;
+
+            atualizarTabela("tabelaGanhos", ganhos, "ganho");
+            atualizarTabela("tabelaPerdas", perdas, "perda");
         }
 
-        function limparConsulta() {
-            document.getElementById('matricula').value = "";
-            document.getElementById('resumo').innerText = "";
-            document.getElementById('tabelaResultados').getElementsByTagName('tbody')[0].innerHTML = "";
+        function atualizarTabela(idTabela, dados, classe) {
+            const tabela = document.getElementById(idTabela).getElementsByTagName("tbody")[0];
+            tabela.innerHTML = "";
+            dados.forEach(item => {
+                let row = tabela.insertRow();
+                let cell1 = row.insertCell(0);
+                let cell2 = row.insertCell(1);
+                cell1.innerText = item[0];
+                cell2.innerText = item[1];
+                row.className = classe;
+            });
         }
     </script>
 </body>
