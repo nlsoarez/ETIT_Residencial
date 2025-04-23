@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta SLA</title>
+    <title>Consulta SLA - ETIT Residencial</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         /* Estilo do corpo e fonte */
@@ -17,9 +17,9 @@
 
         /* Container principal */
         .container {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 25px;
             background-color: #ffffff;
             border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -28,21 +28,22 @@
 
         /* Logo */
         .logo img {
-            width: 150px;
-            margin-bottom: 20px;
+            width: 180px;
+            margin-bottom: 15px;
         }
 
         /* Títulos e subtítulos */
         h2 {
-            font-size: 24px;
+            font-size: 26px;
             color: #D52B1E;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         h3 {
             font-size: 20px;
             color: #444;
-            margin-top: 20px;
+            margin-top: 25px;
+            margin-bottom: 10px;
         }
 
         /* Estilo de entrada e botão */
@@ -50,18 +51,27 @@
             display: flex;
             justify-content: center;
             gap: 10px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
         input, button {
-            padding: 12px;
+            padding: 12px 15px;
             font-size: 16px;
             border-radius: 5px;
             border: 1px solid #ccc;
+            transition: all 0.3s;
         }
 
         input {
-            width: 40%; /* Caixa do login um pouco menor */
+            width: 250px;
+            max-width: 100%;
+        }
+
+        input:focus {
+            border-color: #D52B1E;
+            outline: none;
+            box-shadow: 0 0 5px rgba(213, 43, 30, 0.3);
         }
 
         .botao {
@@ -70,10 +80,12 @@
             border: none;
             cursor: pointer;
             font-weight: bold;
+            min-width: 120px;
         }
 
         .botao:hover {
             background-color: #B2221A;
+            transform: translateY(-2px);
         }
 
         /* Estilo das tabelas */
@@ -81,10 +93,11 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         th, td {
-            padding: 8px;
+            padding: 10px 8px;
             text-align: center;
             border: 1px solid #ddd;
         }
@@ -92,40 +105,118 @@
         th {
             background-color: #D52B1E;
             color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
         }
 
         /* Classes para diferenciação de ganhos e perdas */
         .ganho {
-            background-color: #4CAF50;
-            color: white;
+            background-color: #e6f7e6;
+        }
+
+        .ganho td:last-child {
+            color: #2E7D32;
+            font-weight: bold;
         }
 
         .perda {
-            background-color: #FF4D4D;
-            color: white;
+            background-color: #ffebee;
+        }
+
+        .perda td:last-child {
+            color: #C62828;
+            font-weight: bold;
         }
 
         /* Contadores */
-        .contador {
+        .contadores-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .contador-box {
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f8f8f8;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .contador-box.ganho {
+            border-left: 5px solid #4CAF50;
+        }
+
+        .contador-box.perda {
+            border-left: 5px solid #FF4D4D;
+        }
+
+        .contador-valor {
+            font-size: 24px;
             font-weight: bold;
-            margin-top: 20px;
+            margin: 5px 0;
         }
 
-        /* Separando seções */
-        .resultados {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
+        .ganho .contador-valor {
+            color: #4CAF50;
         }
 
-        .section {
-            margin-top: 20px;
+        .perda .contador-valor {
+            color: #FF4D4D;
         }
 
-        .nome {
-            font-size: 16px;
-            margin-top: 10px;
-            color: #444;
+        /* Nome do usuário */
+        .nome-usuario {
+            font-size: 18px;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        /* Mensagens */
+        .mensagem {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .sucesso {
+            background-color: #e6f7e6;
+            color: #2E7D32;
+            border-left: 5px solid #4CAF50;
+        }
+
+        .erro {
+            background-color: #ffebee;
+            color: #C62828;
+            border-left: 5px solid #FF4D4D;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .container {
+                margin: 15px;
+                padding: 15px;
+            }
+            
+            .contadores-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .input-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            input {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -135,24 +226,34 @@
             <img src="https://www.eventos.momentoeditorial.com.br/wp-content/uploads/2020/07/logo-Claro-800x600px.png" alt="Claro Brasil Logo">
         </div>
         <h2>Painel ETIT Residencial</h2>
+        
         <div class="input-group">
-            <input type="file" id="upload" accept=".xlsx">
+            <input type="file" id="upload" accept=".xlsx, .xls">
         </div>
         <div class="input-group">
-            <input type="text" id="login" placeholder="Digite o login">
+            <input type="text" id="login" placeholder="Digite o login (ex: N0238475)" autocomplete="off">
             <button class="botao" onclick="consultarSLA()">Consultar</button>
         </div>
 
-        <div id="nomeUsuario" class="nome"></div>
+        <div id="nomeUsuario" class="nome-usuario"></div>
+        <div id="mensagem" class="mensagem" style="display: none;"></div>
 
-        <div class="resultados">
-            <div class="section" id="contadores">
-                <h3>Resultados:</h3>
-                <div id="resultadosMain"></div>
+        <div id="contadores" class="contadores-container" style="display: none;">
+            <div class="contador-box ganho">
+                <div>Dentro do SLA</div>
+                <div class="contador-valor" id="totalGanhos">0</div>
+                <div>Tempo Médio: <span id="mediaGanhos">0</span> min</div>
             </div>
+            <div class="contador-box perda">
+                <div>Fora do SLA</div>
+                <div class="contador-valor" id="totalPerdas">0</div>
+                <div>Tempo Médio: <span id="mediaPerdas">0</span> min</div>
+            </div>
+        </div>
 
-            <div class="section" id="tabelaGanhos">
-                <h3>Dentro do SLA:</h3>
+        <div id="tabelaGanhos" style="display: none;">
+            <h3>Dentro do SLA</h3>
+            <div class="table-container">
                 <table>
                     <thead>
                         <tr><th>Ticket</th><th>Tempo (minutos)</th></tr>
@@ -160,9 +261,11 @@
                     <tbody></tbody>
                 </table>
             </div>
+        </div>
 
-            <div class="section" id="tabelaPerdas">
-                <h3>Fora do SLA:</h3>
+        <div id="tabelaPerdas" style="display: none;">
+            <h3>Fora do SLA</h3>
+            <div class="table-container">
                 <table>
                     <thead>
                         <tr><th>Ticket</th><th>Tempo (minutos)</th></tr>
@@ -175,6 +278,7 @@
 
     <script>
         let dadosPlanilha = [];
+        let fileName = "";
 
         const loginToName = {
             "N0238475": "MARLEY MARQUES RIBEIRO",
@@ -194,23 +298,48 @@
 
         document.getElementById('upload').addEventListener('change', function(event) {
             const file = event.target.files[0];
+            if (!file) return;
+            
+            fileName = file.name;
             const reader = new FileReader();
+            
             reader.onload = function(e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const sheetName = workbook.SheetNames[0];
-                const sheet = workbook.Sheets[sheetName];
-                dadosPlanilha = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-
-                alert("Planilha carregada com sucesso!");
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheetName = workbook.SheetNames[0];
+                    const sheet = workbook.Sheets[sheetName];
+                    dadosPlanilha = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                    
+                    showMessage(`Planilha "${fileName}" carregada com sucesso!`, 'sucesso');
+                } catch (error) {
+                    showMessage("Erro ao processar o arquivo. Certifique-se de que é um arquivo Excel válido.", 'erro');
+                    console.error(error);
+                }
             };
+            
+            reader.onerror = function() {
+                showMessage("Erro ao ler o arquivo. Tente novamente.", 'erro');
+            };
+            
             reader.readAsArrayBuffer(file);
         });
 
         function consultarSLA() {
-            const login = document.getElementById('login').value.trim();
+            const login = document.getElementById('login').value.trim().toUpperCase();
+            
             if (!login) {
-                alert("Digite um login!");
+                showMessage("Digite um login para consultar!", 'erro');
+                return;
+            }
+            
+            if (dadosPlanilha.length === 0) {
+                showMessage("Nenhuma planilha foi carregada ainda.", 'erro');
+                return;
+            }
+            
+            if (!loginToName[login]) {
+                showMessage("Login não encontrado na base de dados.", 'erro');
                 return;
             }
 
@@ -223,14 +352,14 @@
                 if (!row || row.length < 9) return;
 
                 let ticket = row[0];
-                let usuarioLogin = row[1]?.toString().trim().toLowerCase();
-                let tempo = parseFloat(row[4]) * 1440;
+                let usuarioLogin = row[1]?.toString().trim().toUpperCase();
+                let tempo = parseFloat(row[4]) * 1440; // Convertendo dias para minutos
                 let etitHFC1 = row[5];
                 let etitHFC2 = row[6];
                 let etitGPON1 = row[7];
                 let etitGPON2 = row[8];
 
-                if (usuarioLogin.includes(login.toLowerCase())) {
+                if (usuarioLogin === login) {
                     let etitHFC = (etitHFC1 == 1 && etitHFC2 == 1) ? 'Ganhou' : (etitHFC1 == 1 && etitHFC2 == 0) ? 'Perdeu' : 'Ignorado';
                     let etitGPON = (etitGPON1 == 1 && etitGPON2 == 1) ? 'Ganhou' : (etitGPON1 == 1 && etitGPON2 == 0) ? 'Perdeu' : 'Ignorado';
 
@@ -244,34 +373,75 @@
                 }
             });
 
-            let mediaGanhos = ganhos.length > 0 ? (totalTempoGanhos / ganhos.length).toFixed(2) : "N/A";
-            let mediaPerdas = perdas.length > 0 ? (totalTempoPerdas / perdas.length).toFixed(2) : "N/A";
-
-            const nomeUsuario = loginToName[login.toUpperCase()] || "Nome não encontrado";
-
-            document.getElementById("nomeUsuario").innerHTML = `Nome: ${nomeUsuario}`;
-            document.getElementById("contadores").innerHTML = 
-                `<div><strong>Total Dentro do SLA:</strong> ${ganhos.length}</div>
-                <div><strong>Total Fora do SLA:</strong> ${perdas.length}</div>
-                <div><strong>Tempo Médio Dentro do SLA:</strong> <b>${mediaGanhos}</b></div>
-                <div><strong>Tempo Médio Fora do SLA:</strong> <b>${mediaPerdas}</b></div>`;
-
+            // Exibir resultados
+            document.getElementById("nomeUsuario").textContent = `Consultor: ${loginToName[login]} (${login})`;
+            
+            document.getElementById("totalGanhos").textContent = ganhos.length;
+            document.getElementById("totalPerdas").textContent = perdas.length;
+            
+            let mediaGanhos = ganhos.length > 0 ? (totalTempoGanhos / ganhos.length).toFixed(2) : "0.00";
+            let mediaPerdas = perdas.length > 0 ? (totalTempoPerdas / perdas.length).toFixed(2) : "0.00";
+            
+            document.getElementById("mediaGanhos").textContent = mediaGanhos;
+            document.getElementById("mediaPerdas").textContent = mediaPerdas;
+            
+            // Atualizar tabelas
             atualizarTabela("tabelaGanhos", ganhos, "ganho");
             atualizarTabela("tabelaPerdas", perdas, "perda");
+            
+            // Mostrar seções de resultados
+            document.getElementById("contadores").style.display = "grid";
+            document.getElementById("tabelaGanhos").style.display = ganhos.length > 0 ? "block" : "none";
+            document.getElementById("tabelaPerdas").style.display = perdas.length > 0 ? "block" : "none";
+            
+            showMessage(`Consulta realizada para ${loginToName[login]}. ${ganhos.length} dentro do SLA e ${perdas.length} fora do SLA.`, 'sucesso');
         }
 
         function atualizarTabela(idTabela, dados, classe) {
             const tabela = document.getElementById(idTabela).getElementsByTagName("tbody")[0];
             tabela.innerHTML = "";
+            
+            if (dados.length === 0) {
+                let row = tabela.insertRow();
+                let cell = row.insertCell(0);
+                cell.colSpan = 2;
+                cell.textContent = "Nenhum registro encontrado";
+                cell.style.textAlign = "center";
+                cell.style.padding = "15px";
+                cell.style.color = "#666";
+                return;
+            }
+            
             dados.forEach(item => {
                 let row = tabela.insertRow();
+                row.className = classe;
+                
                 let cell1 = row.insertCell(0);
                 let cell2 = row.insertCell(1);
-                cell1.innerText = item[0];
-                cell2.innerText = item[1];
-                row.className = classe;
+                
+                cell1.textContent = item[0];
+                cell2.textContent = item[1];
             });
         }
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById("mensagem");
+            messageDiv.textContent = text;
+            messageDiv.className = `mensagem ${type}`;
+            messageDiv.style.display = "block";
+            
+            // Esconder a mensagem após 5 segundos
+            setTimeout(() => {
+                messageDiv.style.display = "none";
+            }, 5000);
+        }
+
+        // Permitir consulta ao pressionar Enter no campo de login
+        document.getElementById("login").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                consultarSLA();
+            }
+        });
     </script>
 </body>
 </html>
