@@ -198,6 +198,79 @@
             border-left: 5px solid #FF4D4D;
         }
 
+        /* Botão Exportar */
+        #btnExportar {
+            background-color: #2E7D32;
+        }
+
+        #btnExportar:hover {
+            background-color: #1B5E20;
+        }
+
+        /* Filtros */
+        #filtros {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Estatísticas por tecnologia */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stats-box {
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f0f7ff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .stats-box h4 {
+            margin-top: 0;
+            color: #0D47A1;
+        }
+
+        .stats-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #0D47A1;
+        }
+
         /* Responsividade */
         @media (max-width: 768px) {
             .container {
@@ -205,11 +278,11 @@
                 padding: 15px;
             }
             
-            .contadores-container {
+            .contadores-container, .stats-container {
                 grid-template-columns: 1fr;
             }
             
-            .input-group {
+            .input-group, #filtros {
                 flex-direction: column;
                 align-items: center;
             }
@@ -251,12 +324,34 @@
             </div>
         </div>
 
+        <div id="statsTecnologia" class="stats-container" style="display: none;">
+            <div class="stats-box">
+                <h4>HFC</h4>
+                <div>Total: <span class="stats-value" id="totalHFC">0</span></div>
+                <div>Dentro SLA: <span class="stats-value" id="dentroHFC">0</span></div>
+                <div>Tempo Médio: <span class="stats-value" id="tempoHFC">0</span> min</div>
+            </div>
+            <div class="stats-box">
+                <h4>GPON</h4>
+                <div>Total: <span class="stats-value" id="totalGPON">0</span></div>
+                <div>Dentro SLA: <span class="stats-value" id="dentroGPON">0</span></div>
+                <div>Tempo Médio: <span class="stats-value" id="tempoGPON">0</span> min</div>
+            </div>
+        </div>
+
+        <div id="filtros" style="display: none;">
+            <button onclick="filtrarTabela('todos')" class="botao">Todos</button>
+            <button onclick="filtrarTabela('HFC')" class="botao">HFC</button>
+            <button onclick="filtrarTabela('GPON')" class="botao">GPON</button>
+            <button onclick="filtrarTabela('Indefinido')" class="botao">Indefinido</button>
+        </div>
+
         <div id="tabelaGanhos" style="display: none;">
             <h3>Dentro do SLA</h3>
             <div class="table-container">
                 <table>
                     <thead>
-                        <tr><th>Ticket</th><th>Tempo (minutos)</th></tr>
+                        <tr><th>Ticket</th><th>Tipo</th><th>Tempo (minutos)</th></tr>
                     </thead>
                     <tbody></tbody>
                 </table>
@@ -268,17 +363,22 @@
             <div class="table-container">
                 <table>
                     <thead>
-                        <tr><th>Ticket</th><th>Tempo (minutos)</th></tr>
+                        <tr><th>Ticket</th><th>Tipo</th><th>Tempo (minutos)</th></tr>
                     </thead>
                     <tbody></tbody>
                 </table>
             </div>
         </div>
+
+        <button id="btnExportar" class="botao" style="display: none; margin-top: 20px;" onclick="exportarParaExcel()">
+            Exportar para Excel
+        </button>
     </div>
 
     <script>
         let dadosPlanilha = [];
         let fileName = "";
+        let dadosFiltrados = { ganhos: [], perdas: [] };
 
         const loginToName = {
             "N0238475": "MARLEY MARQUES RIBEIRO",
@@ -360,18 +460,26 @@
                 let etitGPON2 = row[8];
 
                 if (usuarioLogin === login) {
+                    let tipo = [];
                     let etitHFC = (etitHFC1 == 1 && etitHFC2 == 1) ? 'Ganhou' : (etitHFC1 == 1 && etitHFC2 == 0) ? 'Perdeu' : 'Ignorado';
                     let etitGPON = (etitGPON1 == 1 && etitGPON2 == 1) ? 'Ganhou' : (etitGPON1 == 1 && etitGPON2 == 0) ? 'Perdeu' : 'Ignorado';
 
+                    if (etitHFC1 !== undefined && etitHFC2 !== undefined) tipo.push('HFC');
+                    if (etitGPON1 !== undefined && etitGPON2 !== undefined) tipo.push('GPON');
+                    tipo = tipo.join(' + ') || 'Indefinido';
+
                     if (etitHFC === 'Ganhou' || etitGPON === 'Ganhou') {
-                        ganhos.push([ticket, tempo.toFixed(2)]);
+                        ganhos.push([ticket, tempo.toFixed(2), tipo]);
                         totalTempoGanhos += tempo;
                     } else if (etitHFC === 'Perdeu' || etitGPON === 'Perdeu') {
-                        perdas.push([ticket, tempo.toFixed(2)]);
+                        perdas.push([ticket, tempo.toFixed(2), tipo]);
                         totalTempoPerdas += tempo;
                     }
                 }
             });
+
+            // Salvar dados filtrados
+            dadosFiltrados = { ganhos, perdas };
 
             // Exibir resultados
             document.getElementById("nomeUsuario").textContent = `Consultor: ${loginToName[login]} (${login})`;
@@ -393,8 +501,110 @@
             document.getElementById("contadores").style.display = "grid";
             document.getElementById("tabelaGanhos").style.display = ganhos.length > 0 ? "block" : "none";
             document.getElementById("tabelaPerdas").style.display = perdas.length > 0 ? "block" : "none";
+            document.getElementById('filtros').style.display = (ganhos.length > 0 || perdas.length > 0) ? 'flex' : 'none';
+            document.getElementById('btnExportar').style.display = (ganhos.length > 0 || perdas.length > 0) ? 'block' : 'none';
+            
+            // Exibir estatísticas por tecnologia
+            exibirEstatisticasPorTecnologia(login);
             
             showMessage(`Consulta realizada para ${loginToName[login]}. ${ganhos.length} dentro do SLA e ${perdas.length} fora do SLA.`, 'sucesso');
+        }
+
+        function exibirEstatisticasPorTecnologia(login) {
+            const stats = {
+                HFC: { total: 0, tempoTotal: 0, dentroSLA: 0 },
+                GPON: { total: 0, tempoTotal: 0, dentroSLA: 0 }
+            };
+
+            dadosPlanilha.forEach(row => {
+                if (!row || row.length < 9) return;
+
+                let usuarioLogin = row[1]?.toString().trim().toUpperCase();
+                if (usuarioLogin !== login) return;
+
+                let tempo = parseFloat(row[4]) * 1440;
+                let etitHFC1 = row[5];
+                let etitHFC2 = row[6];
+                let etitGPON1 = row[7];
+                let etitGPON2 = row[8];
+
+                if (etitHFC1 !== undefined && etitHFC2 !== undefined) {
+                    stats.HFC.total++;
+                    stats.HFC.tempoTotal += tempo;
+                    if (etitHFC1 == 1 && etitHFC2 == 1) stats.HFC.dentroSLA++;
+                }
+
+                if (etitGPON1 !== undefined && etitGPON2 !== undefined) {
+                    stats.GPON.total++;
+                    stats.GPON.tempoTotal += tempo;
+                    if (etitGPON1 == 1 && etitGPON2 == 1) stats.GPON.dentroSLA++;
+                }
+            });
+
+            document.getElementById("totalHFC").textContent = stats.HFC.total;
+            document.getElementById("dentroHFC").textContent = stats.HFC.dentroSLA;
+            document.getElementById("tempoHFC").textContent = stats.HFC.total > 0 ? (stats.HFC.tempoTotal / stats.HFC.total).toFixed(2) : "0.00";
+
+            document.getElementById("totalGPON").textContent = stats.GPON.total;
+            document.getElementById("dentroGPON").textContent = stats.GPON.dentroSLA;
+            document.getElementById("tempoGPON").textContent = stats.GPON.total > 0 ? (stats.GPON.tempoTotal / stats.GPON.total).toFixed(2) : "0.00";
+
+            document.getElementById("statsTecnologia").style.display = (stats.HFC.total > 0 || stats.GPON.total > 0) ? "grid" : "none";
+        }
+
+        function filtrarTabela(tipo) {
+            const tabelas = ['tabelaGanhos', 'tabelaPerdas'];
+            
+            tabelas.forEach(id => {
+                const tabela = document.getElementById(id);
+                if (!tabela || tabela.style.display === 'none') return;
+                
+                const linhas = tabela.getElementsByTagName('tbody')[0].rows;
+                
+                for (let linha of linhas) {
+                    const celulaTipo = linha.cells[1].textContent;
+                    const mostrar = 
+                        tipo === 'todos' || 
+                        (tipo === 'HFC' && celulaTipo.includes('HFC')) ||
+                        (tipo === 'GPON' && celulaTipo.includes('GPON')) ||
+                        (tipo === 'Indefinido' && celulaTipo === 'Indefinido');
+                    
+                    linha.style.display = mostrar ? '' : 'none';
+                }
+            });
+        }
+
+        function exportarParaExcel() {
+            const wb = XLSX.utils.book_new();
+            const login = document.getElementById('login').value.trim().toUpperCase();
+            const nomeConsultor = loginToName[login] || login;
+            const data = new Date().toLocaleDateString().replace(/\//g, '-');
+            
+            // Adicionar estatísticas
+            const statsWs = XLSX.utils.json_to_sheet([
+                { "Métrica": "Total HFC", "Valor": document.getElementById("totalHFC").textContent },
+                { "Métrica": "Dentro SLA HFC", "Valor": document.getElementById("dentroHFC").textContent },
+                { "Métrica": "Tempo Médio HFC (min)", "Valor": document.getElementById("tempoHFC").textContent },
+                { "Métrica": "Total GPON", "Valor": document.getElementById("totalGPON").textContent },
+                { "Métrica": "Dentro SLA GPON", "Valor": document.getElementById("dentroGPON").textContent },
+                { "Métrica": "Tempo Médio GPON (min)", "Valor": document.getElementById("tempoGPON").textContent },
+                { "Métrica": "Total Dentro SLA", "Valor": document.getElementById("totalGanhos").textContent },
+                { "Métrica": "Total Fora SLA", "Valor": document.getElementById("totalPerdas").textContent },
+                { "Métrica": "Tempo Médio Dentro SLA (min)", "Valor": document.getElementById("mediaGanhos").textContent },
+                { "Métrica": "Tempo Médio Fora SLA (min)", "Valor": document.getElementById("mediaPerdas").textContent }
+            ]);
+            XLSX.utils.book_append_sheet(wb, statsWs, "Estatísticas");
+            
+            // Adicionar dados detalhados
+            ['tabelaGanhos', 'tabelaPerdas'].forEach(id => {
+                const tabela = document.getElementById(id);
+                if (tabela.style.display !== 'none') {
+                    const ws = XLSX.utils.table_to_sheet(tabela);
+                    XLSX.utils.book_append_sheet(wb, ws, id === 'tabelaGanhos' ? 'Dentro SLA' : 'Fora SLA');
+                }
+            });
+            
+            XLSX.writeFile(wb, `ETIT_${nomeConsultor}_${data}.xlsx`);
         }
 
         function atualizarTabela(idTabela, dados, classe) {
@@ -404,7 +614,7 @@
             if (dados.length === 0) {
                 let row = tabela.insertRow();
                 let cell = row.insertCell(0);
-                cell.colSpan = 2;
+                cell.colSpan = 3;
                 cell.textContent = "Nenhum registro encontrado";
                 cell.style.textAlign = "center";
                 cell.style.padding = "15px";
@@ -418,9 +628,11 @@
                 
                 let cell1 = row.insertCell(0);
                 let cell2 = row.insertCell(1);
+                let cell3 = row.insertCell(2);
                 
                 cell1.textContent = item[0];
-                cell2.textContent = item[1];
+                cell2.textContent = item[2];
+                cell3.textContent = item[1];
             });
         }
 
