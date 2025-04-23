@@ -260,7 +260,6 @@
             <button onclick="filtrarTabela('todos')" class="botao">Todos</button>
             <button onclick="filtrarTabela('HFC')" class="botao">HFC</button>
             <button onclick="filtrarTabela('GPON')" class="botao">GPON</button>
-            <button onclick="filtrarTabela('HFC + GPON')" class="botao">HFC+GPON</button>
         </div>
 
         <div id="tabelaGanhos" style="display: none;">
@@ -491,9 +490,8 @@
                     const celulaTipo = linha.cells[1].textContent;
                     const mostrar = 
                         tipo === 'todos' || 
-                        (tipo === 'HFC' && celulaTipo === 'HFC') ||
-                        (tipo === 'GPON' && celulaTipo === 'GPON') ||
-                        (tipo === 'HFC + GPON' && celulaTipo === 'HFC + GPON');
+                        (tipo === 'HFC' && celulaTipo.includes('HFC')) ||
+                        (tipo === 'GPON' && celulaTipo.includes('GPON'));
                     
                     linha.style.display = mostrar ? '' : 'none';
                 }
