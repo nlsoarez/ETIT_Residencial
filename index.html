@@ -6,11 +6,374 @@
     <title>Consulta SLA - ETIT Residencial</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        /* [Manter todos os estilos anteriores] */
+        /* Estilo do corpo e fonte */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f2f2f2;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Container principal */
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 25px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        /* Logo */
+        .logo img {
+            width: 180px;
+            margin-bottom: 15px;
+        }
+
+        /* Títulos e subtítulos */
+        h2 {
+            font-size: 26px;
+            color: #D52B1E;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            font-size: 20px;
+            color: #444;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        /* Estilo de entrada e botão */
+        .input-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        input, button {
+            padding: 12px 15px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            transition: all 0.3s;
+        }
+
+        input {
+            width: 250px;
+            max-width: 100%;
+        }
+
+        input:focus {
+            border-color: #D52B1E;
+            outline: none;
+            box-shadow: 0 0 5px rgba(213, 43, 30, 0.3);
+        }
+
+        .botao {
+            background-color: #D52B1E;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            min-width: 120px;
+        }
+
+        .botao:hover {
+            background-color: #B2221A;
+            transform: translateY(-2px);
+        }
+
+        /* Estilo das tabelas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 10px 8px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #D52B1E;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* Classes para diferenciação de ganhos e perdas */
+        .ganho {
+            background-color: #e6f7e6;
+        }
+
+        .ganho td:last-child {
+            color: #2E7D32;
+            font-weight: bold;
+        }
+
+        .perda {
+            background-color: #ffebee;
+        }
+
+        .perda td:last-child {
+            color: #C62828;
+            font-weight: bold;
+        }
+
+        /* Contadores */
+        .contadores-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .contador-box {
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f8f8f8;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .contador-box.ganho {
+            border-left: 5px solid #4CAF50;
+        }
+
+        .contador-box.perda {
+            border-left: 5px solid #FF4D4D;
+        }
+
+        .contador-valor {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        .ganho .contador-valor {
+            color: #4CAF50;
+        }
+
+        .perda .contador-valor {
+            color: #FF4D4D;
+        }
+
+        /* Nome do usuário */
+        .nome-usuario {
+            font-size: 18px;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        /* Mensagens */
+        .mensagem {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .sucesso {
+            background-color: #e6f7e6;
+            color: #2E7D32;
+            border-left: 5px solid #4CAF50;
+        }
+
+        .erro {
+            background-color: #ffebee;
+            color: #C62828;
+            border-left: 5px solid #FF4D4D;
+        }
+
+        /* Botão Exportar */
+        #btnExportar {
+            background-color: #2E7D32;
+        }
+
+        #btnExportar:hover {
+            background-color: #1B5E20;
+        }
+
+        /* Filtros */
+        #filtros {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Estatísticas por tecnologia */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stats-box {
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f0f7ff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .stats-box h4 {
+            margin-top: 0;
+            color: #0D47A1;
+        }
+
+        .stats-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #0D47A1;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .container {
+                margin: 15px;
+                padding: 15px;
+            }
+            
+            .contadores-container, .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .input-group, #filtros {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            input {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- [Manter toda a estrutura HTML anterior] -->
+    <div class="container">
+        <div class="logo">
+            <img src="https://www.eventos.momentoeditorial.com.br/wp-content/uploads/2020/07/logo-Claro-800x600px.png" alt="Claro Brasil Logo">
+        </div>
+        <h2>Painel ETIT Residencial</h2>
+        
+        <div class="input-group">
+            <input type="file" id="upload" accept=".xlsx, .xls">
+        </div>
+        <div class="input-group">
+            <input type="text" id="login" placeholder="Digite o login (ex: N0238475)" autocomplete="off">
+            <button class="botao" onclick="consultarSLA()">Consultar</button>
+        </div>
+
+        <div id="nomeUsuario" class="nome-usuario"></div>
+        <div id="mensagem" class="mensagem" style="display: none;"></div>
+
+        <div id="contadores" class="contadores-container" style="display: none;">
+            <div class="contador-box ganho">
+                <div>Dentro do SLA</div>
+                <div class="contador-valor" id="totalGanhos">0</div>
+                <div>Tempo Médio: <span id="mediaGanhos">0</span> min</div>
+            </div>
+            <div class="contador-box perda">
+                <div>Fora do SLA</div>
+                <div class="contador-valor" id="totalPerdas">0</div>
+                <div>Tempo Médio: <span id="mediaPerdas">0</span> min</div>
+            </div>
+        </div>
+
+        <div id="statsTecnologia" class="stats-container" style="display: none;">
+            <div class="stats-box">
+                <h4>HFC</h4>
+                <div>Total: <span class="stats-value" id="totalHFC">0</span></div>
+                <div>Dentro SLA: <span class="stats-value" id="dentroHFC">0</span></div>
+                <div>Tempo Médio: <span class="stats-value" id="tempoHFC">0</span> min</div>
+            </div>
+            <div class="stats-box">
+                <h4>GPON</h4>
+                <div>Total: <span class="stats-value" id="totalGPON">0</span></div>
+                <div>Dentro SLA: <span class="stats-value" id="dentroGPON">0</span></div>
+                <div>Tempo Médio: <span class="stats-value" id="tempoGPON">0</span> min</div>
+            </div>
+        </div>
+
+        <div id="filtros" style="display: none;">
+            <button onclick="filtrarTabela('todos')" class="botao">Todos</button>
+            <button onclick="filtrarTabela('HFC')" class="botao">HFC</button>
+            <button onclick="filtrarTabela('GPON')" class="botao">GPON</button>
+            <button onclick="filtrarTabela('Indefinido')" class="botao">Indefinido</button>
+        </div>
+
+        <div id="tabelaGanhos" style="display: none;">
+            <h3>Dentro do SLA</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr><th>Ticket</th><th>Tipo</th><th>Tempo (minutos)</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="tabelaPerdas" style="display: none;">
+            <h3>Fora do SLA</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr><th>Ticket</th><th>Tipo</th><th>Tempo (minutos)</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <button id="btnExportar" class="botao" style="display: none; margin-top: 20px;" onclick="exportarParaExcel()">
+            Exportar para Excel
+        </button>
+    </div>
 
     <script>
         let dadosPlanilha = [];
@@ -55,6 +418,10 @@
                 }
             };
             
+            reader.onerror = function() {
+                showMessage("Erro ao ler o arquivo. Tente novamente.", 'erro');
+            };
+            
             reader.readAsArrayBuffer(file);
         });
 
@@ -84,60 +451,34 @@
             dadosPlanilha.forEach(row => {
                 if (!row || row.length < 9) return;
 
-                // Estrutura das colunas:
-                // 0: Ticket
-                // 1: Login
-                // 4: Tempo (em dias)
-                // 5: HFC - Volume (Coluna F)
-                // 6: HFC - Indicador (Coluna G)
-                // 7: GPON - Volume (Coluna H)
-                // 8: GPON - Indicador (Coluna I)
-                
                 let ticket = row[0];
                 let usuarioLogin = row[1]?.toString().trim().toUpperCase();
                 let tempo = parseFloat(row[4]) * 1440; // Convertendo dias para minutos
-                
-                // HFC: Coluna F (Volume) e G (Indicador)
-                let hfcVolume = row[5];
-                let hfcIndicador = row[6];
-                
-                // GPON: Coluna H (Volume) e I (Indicador)
-                let gponVolume = row[7];
-                let gponIndicador = row[8];
+                let etitHFC1 = row[5];
+                let etitHFC2 = row[6];
+                let etitGPON1 = row[7];
+                let etitGPON2 = row[8];
 
                 if (usuarioLogin === login) {
-                    let tipo = '';
-                    
-                    // Verificar HFC (1 0 ou 1 1)
-                    const isHFC = hfcVolume == 1 && (hfcIndicador == 0 || hfcIndicador == 1);
-                    
-                    // Verificar GPON (1 0 ou 1 1)
-                    const isGPON = gponVolume == 1 && (gponIndicador == 0 || gponIndicador == 1);
-                    
-                    if (isHFC && isGPON) {
-                        tipo = 'HFC + GPON';
-                    } else if (isHFC) {
-                        tipo = 'HFC';
-                    } else if (isGPON) {
-                        tipo = 'GPON';
-                    } else {
-                        tipo = 'Indefinido';
-                    }
+                    let tipo = [];
+                    let etitHFC = (etitHFC1 == 1 && etitHFC2 == 1) ? 'Ganhou' : (etitHFC1 == 1 && etitHFC2 == 0) ? 'Perdeu' : 'Ignorado';
+                    let etitGPON = (etitGPON1 == 1 && etitGPON2 == 1) ? 'Ganhou' : (etitGPON1 == 1 && etitGPON2 == 0) ? 'Perdeu' : 'Ignorado';
 
-                    // Dentro do SLA (1 1)
-                    if ((hfcVolume == 1 && hfcIndicador == 1) || (gponVolume == 1 && gponIndicador == 1)) {
+                    if (etitHFC1 !== undefined && etitHFC2 !== undefined) tipo.push('HFC');
+                    if (etitGPON1 !== undefined && etitGPON2 !== undefined) tipo.push('GPON');
+                    tipo = tipo.join(' + ') || 'Indefinido';
+
+                    if (etitHFC === 'Ganhou' || etitGPON === 'Ganhou') {
                         ganhos.push([ticket, tempo.toFixed(2), tipo]);
                         totalTempoGanhos += tempo;
-                    } 
-                    // Fora do SLA (1 0)
-                    else if ((hfcVolume == 1 && hfcIndicador == 0) || (gponVolume == 1 && gponIndicador == 0)) {
+                    } else if (etitHFC === 'Perdeu' || etitGPON === 'Perdeu') {
                         perdas.push([ticket, tempo.toFixed(2), tipo]);
                         totalTempoPerdas += tempo;
                     }
                 }
             });
 
-            // [Restante do código permanece igual...]
+            // Salvar dados filtrados
             dadosFiltrados = { ganhos, perdas };
 
             // Exibir resultados
@@ -182,23 +523,24 @@
                 if (usuarioLogin !== login) return;
 
                 let tempo = parseFloat(row[4]) * 1440;
-                
-                // HFC
-                if (row[5] == 1) { // Volume HFC
+                let etitHFC1 = row[5];
+                let etitHFC2 = row[6];
+                let etitGPON1 = row[7];
+                let etitGPON2 = row[8];
+
+                if (etitHFC1 !== undefined && etitHFC2 !== undefined) {
                     stats.HFC.total++;
                     stats.HFC.tempoTotal += tempo;
-                    if (row[6] == 1) stats.HFC.dentroSLA++; // Indicador HFC
+                    if (etitHFC1 == 1 && etitHFC2 == 1) stats.HFC.dentroSLA++;
                 }
-                
-                // GPON
-                if (row[7] == 1) { // Volume GPON
+
+                if (etitGPON1 !== undefined && etitGPON2 !== undefined) {
                     stats.GPON.total++;
                     stats.GPON.tempoTotal += tempo;
-                    if (row[8] == 1) stats.GPON.dentroSLA++; // Indicador GPON
+                    if (etitGPON1 == 1 && etitGPON2 == 1) stats.GPON.dentroSLA++;
                 }
             });
 
-            // [Restante da função permanece igual...]
             document.getElementById("totalHFC").textContent = stats.HFC.total;
             document.getElementById("dentroHFC").textContent = stats.HFC.dentroSLA;
             document.getElementById("tempoHFC").textContent = stats.HFC.total > 0 ? (stats.HFC.tempoTotal / stats.HFC.total).toFixed(2) : "0.00";
@@ -210,7 +552,108 @@
             document.getElementById("statsTecnologia").style.display = (stats.HFC.total > 0 || stats.GPON.total > 0) ? "grid" : "none";
         }
 
-        // [Manter as demais funções inalteradas]
+        function filtrarTabela(tipo) {
+            const tabelas = ['tabelaGanhos', 'tabelaPerdas'];
+            
+            tabelas.forEach(id => {
+                const tabela = document.getElementById(id);
+                if (!tabela || tabela.style.display === 'none') return;
+                
+                const linhas = tabela.getElementsByTagName('tbody')[0].rows;
+                
+                for (let linha of linhas) {
+                    const celulaTipo = linha.cells[1].textContent;
+                    const mostrar = 
+                        tipo === 'todos' || 
+                        (tipo === 'HFC' && celulaTipo.includes('HFC')) ||
+                        (tipo === 'GPON' && celulaTipo.includes('GPON')) ||
+                        (tipo === 'Indefinido' && celulaTipo === 'Indefinido');
+                    
+                    linha.style.display = mostrar ? '' : 'none';
+                }
+            });
+        }
+
+        function exportarParaExcel() {
+            const wb = XLSX.utils.book_new();
+            const login = document.getElementById('login').value.trim().toUpperCase();
+            const nomeConsultor = loginToName[login] || login;
+            const data = new Date().toLocaleDateString().replace(/\//g, '-');
+            
+            // Adicionar estatísticas
+            const statsWs = XLSX.utils.json_to_sheet([
+                { "Métrica": "Total HFC", "Valor": document.getElementById("totalHFC").textContent },
+                { "Métrica": "Dentro SLA HFC", "Valor": document.getElementById("dentroHFC").textContent },
+                { "Métrica": "Tempo Médio HFC (min)", "Valor": document.getElementById("tempoHFC").textContent },
+                { "Métrica": "Total GPON", "Valor": document.getElementById("totalGPON").textContent },
+                { "Métrica": "Dentro SLA GPON", "Valor": document.getElementById("dentroGPON").textContent },
+                { "Métrica": "Tempo Médio GPON (min)", "Valor": document.getElementById("tempoGPON").textContent },
+                { "Métrica": "Total Dentro SLA", "Valor": document.getElementById("totalGanhos").textContent },
+                { "Métrica": "Total Fora SLA", "Valor": document.getElementById("totalPerdas").textContent },
+                { "Métrica": "Tempo Médio Dentro SLA (min)", "Valor": document.getElementById("mediaGanhos").textContent },
+                { "Métrica": "Tempo Médio Fora SLA (min)", "Valor": document.getElementById("mediaPerdas").textContent }
+            ]);
+            XLSX.utils.book_append_sheet(wb, statsWs, "Estatísticas");
+            
+            // Adicionar dados detalhados
+            ['tabelaGanhos', 'tabelaPerdas'].forEach(id => {
+                const tabela = document.getElementById(id);
+                if (tabela.style.display !== 'none') {
+                    const ws = XLSX.utils.table_to_sheet(tabela);
+                    XLSX.utils.book_append_sheet(wb, ws, id === 'tabelaGanhos' ? 'Dentro SLA' : 'Fora SLA');
+                }
+            });
+            
+            XLSX.writeFile(wb, `ETIT_${nomeConsultor}_${data}.xlsx`);
+        }
+
+        function atualizarTabela(idTabela, dados, classe) {
+            const tabela = document.getElementById(idTabela).getElementsByTagName("tbody")[0];
+            tabela.innerHTML = "";
+            
+            if (dados.length === 0) {
+                let row = tabela.insertRow();
+                let cell = row.insertCell(0);
+                cell.colSpan = 3;
+                cell.textContent = "Nenhum registro encontrado";
+                cell.style.textAlign = "center";
+                cell.style.padding = "15px";
+                cell.style.color = "#666";
+                return;
+            }
+            
+            dados.forEach(item => {
+                let row = tabela.insertRow();
+                row.className = classe;
+                
+                let cell1 = row.insertCell(0);
+                let cell2 = row.insertCell(1);
+                let cell3 = row.insertCell(2);
+                
+                cell1.textContent = item[0];
+                cell2.textContent = item[2];
+                cell3.textContent = item[1];
+            });
+        }
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById("mensagem");
+            messageDiv.textContent = text;
+            messageDiv.className = `mensagem ${type}`;
+            messageDiv.style.display = "block";
+            
+            // Esconder a mensagem após 5 segundos
+            setTimeout(() => {
+                messageDiv.style.display = "none";
+            }, 5000);
+        }
+
+        // Permitir consulta ao pressionar Enter no campo de login
+        document.getElementById("login").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                consultarSLA();
+            }
+        });
     </script>
 </body>
 </html>
