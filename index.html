@@ -312,6 +312,11 @@
             "N5923996": "JULIO CESAR SANTOS SOARES"
         };
 
+        // Função para normalizar logins (case-insensitive)
+        function normalizarLogin(login) {
+            return login?.toString().trim().toUpperCase();
+        }
+
         document.getElementById('upload').addEventListener('change', function(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -338,7 +343,8 @@
         });
 
         function consultarSLA() {
-            const login = document.getElementById('login').value.trim().toUpperCase();
+            const loginInput = document.getElementById('login').value;
+            const login = normalizarLogin(loginInput);
             
             if (!login) {
                 showMessage("Digite um login para consultar!", 'erro');
@@ -373,7 +379,7 @@
                 // 8: GPON - Indicador (Coluna I)
                 
                 let ticket = row[0];
-                let usuarioLogin = row[1]?.toString().trim().toUpperCase();
+                let usuarioLogin = normalizarLogin(row[1]);
                 let tempo = parseFloat(row[4]) * 1440; // Convertendo dias para minutos
                 
                 let hfcVolume = row[5];
@@ -446,7 +452,7 @@
             dadosPlanilha.forEach(row => {
                 if (!row || row.length < 9) return;
 
-                let usuarioLogin = row[1]?.toString().trim().toUpperCase();
+                let usuarioLogin = normalizarLogin(row[1]);
                 if (usuarioLogin !== login) return;
 
                 let tempo = parseFloat(row[4]) * 1440;
@@ -500,7 +506,7 @@
 
         function exportarParaExcel() {
             const wb = XLSX.utils.book_new();
-            const login = document.getElementById('login').value.trim().toUpperCase();
+            const login = normalizarLogin(document.getElementById('login').value);
             const nomeConsultor = loginToName[login] || login;
             const data = new Date().toLocaleDateString().replace(/\//g, '-');
             
